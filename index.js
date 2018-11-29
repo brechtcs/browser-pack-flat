@@ -68,7 +68,8 @@ function parseModule (row, index, rows) {
   // references in the second.
   var magicString = transformAst(source, {
     ecmaVersion: 9,
-    inputFilename: row.sourceFile
+    inputFilename: row.sourceFile,
+    sourceType: this.sourceType || 'script'
   }, function (node) {
     if (node.type === 'Program') ast = node
     scan.visitScope(node)
@@ -269,7 +270,7 @@ function flatten (rows, opts, stream) {
   rows.usedGlobalVariables = new Set()
   rows.exposeName = generateName(rows, 'exposedRequire')
   rows.createModuleFactoryName = generateName(rows, 'createModuleFactory')
-  rows.forEach(parseModule)
+  rows.forEach(parseModule.bind(opts))
   rows.forEach(identifyGlobals)
   rows.forEach(markDuplicateVariableNames)
   rows.forEach(rewriteModule)
